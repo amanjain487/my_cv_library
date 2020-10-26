@@ -185,17 +185,18 @@ def sobel_edge(img, image_name, sigma, threshold):
     grad_mag, grad_orient = get_mag_and_orient(gradient_x, gradient_y, threshold)
 
     # display the image with sobel edges(almost similar to open_cv)
-    cv2.imshow('Final_Edges_' + image_name, grad_mag)
+    if __name__ == "__main__":
+        cv2.imshow('Final_Edges_' + image_name, grad_mag)
 
-    return grad_mag
+    return grad_mag, grad_orient
 
-if __name__ == "__main__":
-    image_path = 'sample_image.jpg'  # <- insert image name here
+def param_passing():
+    image_path = 'Samples/s2.jpg'  # <- insert image name here
 
     # the quality of edges depends on these parameters
     # try different parameters and see the changes in edges
     sigma = 0.5  # <- insert sigma value
-    threshold = 1
+    threshold = 0.01
 
     image = cv2.imread(image_path)  # -> open the image
 
@@ -203,12 +204,8 @@ if __name__ == "__main__":
     image_name = image_path.split("/")[-1]
 
     # run the Sobel edge detector
-    edge_image = sobel_edge(image, image_name, sigma, threshold)
+    sobel_edge(image, image_name, sigma, threshold)
 
-    # wait for esc to terminate
-    key = cv2.waitKey(0)
-    key = chr(key & 255)
-    if key == 27:
-        cv2.destroyAllWindows()
-        
-    return edge_image
+if __name__ == "__main__":
+    param_passing()
+    cv2.waitKey(0)
