@@ -13,6 +13,7 @@ import sobel as se
 0 0 0 2 0 0 ---> 0 0 0 2 0 0
 '''
 
+
 # if gradient_direction is between 67.5 and 112.5 degrees, check pixels left and right
 # if gradient direction is between 112.5 and 157.5 degrees, check top_right and bottom_left pixels
 # and so on cover all possible all angles
@@ -41,12 +42,11 @@ def non_max_suppression(grad_mag, grad_orient, threshold):
     return nms
 
 
-# pass 2 threshold values
-# suppress the weak edges which may be noise
-# keeps only the edges whose pixel value is greater than high_threshold value
-# if a value is less than high_threshold and greater than low_threshold, then check if it is connected to any strong edge
-# if less than high threshold and greater than low threshold and not connected to any strong edge, then supress that pixel i.e., make that pixel value as 0
-# if less than low_threshold, suppress that straight away
+# pass 2 threshold values suppress the weak edges which may be noise keeps only the edges whose pixel value is
+# greater than high_threshold value if a value is less than high_threshold and greater than low_threshold,
+# then check if it is connected to any strong edge if less than high threshold and greater than low threshold and not
+# connected to any strong edge, then supress that pixel i.e., make that pixel value as 0 if less than low_threshold,
+# suppress that straight away
 def double_threshold_linking(nms, low_threshold, high_threshold):
     hysteresis = np.zeros(nms.shape)
 
@@ -86,7 +86,6 @@ def double_threshold_linking(nms, low_threshold, high_threshold):
 
 # canny_edge_function which performs all the above functions
 def canny_edge(image, image_name, sigma, low_threshold, high_threshold):
-
     grad_mag, grad_orient = se.sobel_edge(image, image_name, sigma, low_threshold)
 
     # make thick edges as thin edges i.e., single line
@@ -95,10 +94,11 @@ def canny_edge(image, image_name, sigma, low_threshold, high_threshold):
     # suppress the weak edges
     final_edges = double_threshold_linking(non_max, low_threshold, high_threshold)
     # display the image with canny edges(almost similar to open_cv)
-    if __name__ != "__main__":
+    if __name__ == "__main__":
         cv2.imshow("Canny Edges", final_edges)
 
     return final_edges
+
 
 def param_passing():
     image_path = 'Samples/s2.jpg'  # <- insert image name here
@@ -106,7 +106,8 @@ def param_passing():
     # the quality of edges depends on these parameters
     # try different parameters and see the changes in edges
     sigma = 0.5  # <- insert sigma value
-    low_thresh = 0.0001  # <- insert low_threshold value (in the range of 0 to 1) since all the calculations are in float, 0 to 1 will act as 0 t0 255 which is int8.
+    low_thresh = 0.0001  # <- insert low_threshold value (in the range of 0 to 1) since all the calculations are in
+    # float, 0 to 1 will act as 0 t0 255 which is int8.
     high_thresh = 0.2  # <- insert high_threshold value
 
     image = cv2.imread(image_path)  # -> open the image
@@ -116,7 +117,6 @@ def param_passing():
 
     # run the Canny edge detector
     canny_edge(image, image_name, sigma, low_thresh, high_thresh)
-
 
 if __name__ == "__main__":
     param_passing()
