@@ -7,8 +7,8 @@ import math
 
 # --------------------------------------------------------------------------------------------------------------------#
 # 1. Contrast Stretching or Normalization
-# To normalize the image or improve contrast of image
-# i.e., stretching the range of intensity values to span the desired range specified by (min,max)
+# To normalize the image or improve the contrast of the image
+# i.e., stretching the range of intensity values to span the desired range specified by (min, max)
 
 # input -> Grayscale Image
 # output -> Grayscale Image
@@ -394,9 +394,9 @@ def calculate_centroid(image):
 
 # ========================================== SOBEL EDGES DETECTOR=====================================================
 
-# If you want to apply gauss to an image and then apply sobel filter
-# Then, 1st apply sobel to gauss filter and then apply the result on image
-# Result will be same, but it will require less computation.
+# If you want to apply gauss to an image and then apply Sobel filter
+# Then, 1st apply Sobel to gauss filter and then apply the result on the image
+# Result will be the same, but it will require less computation.
 # input -> gauss_kernel(gauss_filter), sobel_x(vertical edge detector kernel), sobel_y(horizontal edge detector kernel)
 # output -> 2 filters
 # 1. gauss applied to vertical edge detector
@@ -420,8 +420,8 @@ def convolve_gauss_to_sobel(gauss_kernel, sobel_x=np.array([[-1, 0, 1], [-2, 0, 
     gauss_sobel_x = np.zeros_like(padded_gauss_kernel)
     gauss_sobel_y = np.zeros_like(padded_gauss_kernel)
 
-    # calculate the values of final filter
-    # after applying sobel to gauss
+    # calculate the values of the final filter
+    # after applying Sobel to gauss
     # applying here means convolution.
     for i in range(gauss_sobel_x.shape[0]):
         for j in range(gauss_sobel_y.shape[1]):
@@ -454,15 +454,15 @@ def convolve_gauss_to_sobel(gauss_kernel, sobel_x=np.array([[-1, 0, 1], [-2, 0, 
                 gauss_sobel_x[i, j] += padded_gauss_kernel[i + 1, j] * convolving_sobel_x[2, 1]
                 gauss_sobel_y[i, j] += padded_gauss_kernel[i + 1, j] * convolving_sobel_y[2, 1]
 
-    # filter which contains sobel applied to gauss, which can be applied to any image
-    # the result after applying this filter to any image will result in edges detected using sobel after applying gauss
+    # filter which contains Sobel applied to gauss, which can be applied to any image
+    # the result after applying this filter to any image will result in edges detected using Sobel after applying gauss
     return gauss_sobel_x, gauss_sobel_y
 
 
-# Apply cross-correlation of input kernel on input image.
-# apply sobel filter(any of the edge detector filter) to image
-# finding edges using sobel edge detector kernel on which gaussian filter is applied
-# you can skip applying gaussian filter by directly passing the sobel kernel
+# Apply cross-correlation of input kernel on the input image.
+# apply Sobel filter(any of the edge detector filter) to image
+# finding edges using Sobel edge detector kernel on which Gaussian filter is applied
+# you can skip applying a gaussian filter by directly passing the Sobel kernel
 # Input -> image, edge detector kernel
 # output -> image with edges(horizontal or vertical based on input kernel)
 
@@ -471,7 +471,7 @@ def sobel_edges(image, kernel):
     # same as applying differentiation or finding gradients
     # i.e., partial differentiation
     # w.r.t to x when using vertical edge detector kernel
-    # wr.t to y when using horizontal edge detector kernel
+    # w.r.t to y when using horizontal edge detector kernel
 
     # create output image with all pixel values zero
     sobel = np.zeros_like(image)
@@ -614,7 +614,7 @@ def non_max_suppression(grad_mag, grad_orient, threshold):
 
 # pass 2 threshold values suppress the weak edges which may be noise keeps only the edges whose pixel value is
 # greater than high_threshold value if a value is less than high_threshold and greater than low_threshold,
-# then check if it is connected to any strong edge if less than high threshold and greater than low threshold and not
+# then check if it is connected to any strong edge if less than the high threshold and greater than the low threshold and not
 # connected to any strong edge, then suppress that pixel i.e., make that pixel value as 0 if less than low_threshold,
 # suppress that straight away
 # input -> image with thin edges, low_threshold, high_threshold
@@ -699,7 +699,7 @@ def trace_further_boundary(image, path, prev, off_start, general_offset):
     # off_start = where to go from prev to start the iteration
 
     while True:
-        # performing shift operation to arrange the nearby pixels in clockwise order with off_start as starting point.
+        # performing shift operation to arrange the nearby pixels in clockwise order with off_start as a starting point.
         index = 0
         for k in general_offset:
             if k == off_start:
@@ -714,26 +714,25 @@ def trace_further_boundary(image, path, prev, off_start, general_offset):
 
             i = prev[0] + curr_offset[k][0]
             j = prev[1] + curr_offset[k][1]
-            if image[i, j] != 0:
-                now = [i, j]
-                # if current_pixel is same as second pixel in path, then path is complete, return the image and path
-                if len(path) > 1 and now == path[1]:
-                    return image, path
-                # if a pixel is visited again, remove that
-                # NOTE - This was added, because it serves better for my work, it can be removed
-                elif now in path and now != path[0]:
-                    path.remove(now)
-                else:
-                    path.append(now)
+            try:
+                if image[i, j] != 0:
+                    now = [i, j]
+                    # if current_pixel is same as second pixel in path, then path is complete, return the image and path
+                    if len(path) > 1 and now == path[1]:
+                        return image, path
+                    else:
+                        path.append(now)
 
-                # calculate the parameters for finding next pixel
-                off_i = prev[0] + curr_offset[k - 1][0]
-                off_j = prev[1] + curr_offset[k - 1][1]
+                    # calculate the parameters for finding next pixel
+                    off_i = prev[0] + curr_offset[k - 1][0]
+                    off_j = prev[1] + curr_offset[k - 1][1]
 
-                off_start = [off_i - i, off_j - j]
-                prev = [i, j]
-                stop = 0
-                break
+                    off_start = [off_i - i, off_j - j]
+                    prev = [i, j]
+                    stop = 0
+                    break
+            except IndexError:
+                continue
 
         # if no nearby pixel is edge image, stop the tracing and return the path.
         # it means, it was not filled object
@@ -744,13 +743,13 @@ def trace_further_boundary(image, path, prev, off_start, general_offset):
 
 
 # trace the boundary
-# check for nearby edge pixel in clockwise direction,
+# check for nearby edge pixel in the clockwise direction,
 # if found, add it to the path,
-# else, end that boundary and store the path in index of the beginning pixel of the path
+# else, end that boundary and store the path in the index of the beginning pixel of the path
 # use Dynamic Programming to avoid retracing of already traced objects
-# input -> image with canny/sobel or any edges
-# output -> boundary/path of object present at each pixel, so no of path = no.of pixels in image
-# if a pixel does not contain any edge, then add empty list as path.
+# input -> image with canny/Sobel or any edges
+# output -> boundary/path of the object present at each pixel, so no of path = no. of pixels in the image
+# if a pixel does not contain any edge, then add an empty list as a path.
 def trace_boundary(image):
     # possible nearby pixels containing edges for [0,0].
     general_offset = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]]
@@ -788,10 +787,10 @@ def trace_boundary(image):
 # ----------------- to find perspective transformation matrix, these corners are required
 
 
-# find 4 corners by approximating the object to trapezium
-# not actual approximation,
+# find 4 corners by approximating the object to a trapezium
+# not an actual approximation,
 # but if there are 2 points with more than allowed curvature, one of them is one of the 4 corners.
-# input -> path/boundary of object whose corners are to be found, allowed_curvature
+# input -> path/boundary of the object whose corners are to be found, allowed_curvature
 # output -> 4 corners which are not sorted
 
 # Procedure:
@@ -837,7 +836,7 @@ def approximate_the_object(path, allowed_curvature):
                 max_distance = distance
                 second_half_starting_point = j
         # distance between those two points should be greater than allowed curvature,
-        # else no corners will be found, since the farthest point themselves are within allowed curvature limit.
+        # else no corners will be found since the farthest point themselves are within the allowed curvature limit.
         is_valid_line = max_distance <= allowed_curvature
 
     # if curvature is more than allowed curvature
@@ -891,11 +890,11 @@ def approximate_the_object(path, allowed_curvature):
             is_valid_line = True
             starting_point = path[line_in_consideration[0]]
 
-        # if curvature is less than allowed_curvature, append starting point as corner
+        # if the curvature is less than allowed_curvature, append starting point as a corner
         if is_valid_line:
             if starting_point not in corners:
                 corners.append(starting_point)
-        # else, split the line in two and append them to lines list.
+        # else split the line in two and append them to lines list.
         else:
             first_half_ending_point = second_half_starting_point
             lines.append([second_half_starting_point, second_half_ending_point])
@@ -905,14 +904,14 @@ def approximate_the_object(path, allowed_curvature):
 
 
 # find corners of an object
-# the 1st element in path and last element will be same if the object is filled
-# input -> path / boundary of object for which corners are to be found, image containing the object
+# the 1st element in the path and last element will be the same if the object is filled
+# input -> path/boundary of the object for which corners are to be found, an image containing the object
 # output -> 4 corners after approximating the object to trapezium.
 # this function is based on important parameter allowed_curvature
-# which in turn is based on perimeter of the object
-# perimeter is calculated by finding the length of path,
+# which in turn is based on the perimeter of the object
+# perimeter is calculated by finding the length of the path,
 # allowed_curvature tells what is the maximum allowed curvature
-# if the curvature between any 2 points is more than allowed curvature, then 1 of them is considered as essential corner
+# if the curvature between any 2 points is more than the allowed curvature, then 1 of them is considered as the essential corner
 def find_corners(path, image):
     approximate_perimeter = len(path)
     allowed_curvature = approximate_perimeter * 0.15
@@ -961,13 +960,13 @@ def find_corners(path, image):
 # =======================================PERSPECTIVE TRANSFORMATION MATRIX============================================
 # Solve Ax = b by elimination method
 
-# exchange rows when pivot element is zero,
-# input -> A(in which nth row has to be exchanges with rows below),
+# exchange rows when the pivot element is zero,
+# input -> A(in which nth row has to be exchanged with rows below),
 # b(in which nth row has to be exchanged too), n(row to be exchanged).
 # output -> exchanged A and exchanged b
 def exchange(a, b, n):
     exchanged = False
-    # find non zero pivot element below nth row
+    # find non zero pivot element below the nth row
     for i in range(n + 1, len(b)):
         # if found, exchange them, do the same exchange on b too.
         if a[i, n] != 0:
